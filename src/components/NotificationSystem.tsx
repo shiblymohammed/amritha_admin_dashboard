@@ -7,7 +7,6 @@ import {
   FiX, 
   FiCheck, 
   FiCalendar, 
-  FiUser, 
   FiClock,
   FiAlertCircle,
   FiCheckCircle,

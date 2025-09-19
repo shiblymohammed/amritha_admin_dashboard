@@ -15,8 +15,6 @@ import {
   FiCheckCircle,
   FiXCircle,
   FiAlertCircle,
-  FiEdit2,
-  FiSave,
   FiRefreshCw,
   FiPrinter,
   FiDownload,
@@ -30,27 +28,11 @@ interface BookingDetailsProps {
 }
 
 function BookingDetails({ booking, onClose, onUpdate }: BookingDetailsProps) {
-  const [isEditing, setIsEditing] = useState(false);
   const [editedBooking, setEditedBooking] = useState(booking);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSave = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      await bookingApi.updateBookingStatus(editedBooking.id, editedBooking.status || 'pending');
-      setIsEditing(false);
-      onUpdate();
-    } catch (error) {
-      console.error('Error updating booking:', error);
-      setError('Failed to update booking. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleStatusChange = async (newStatus: string) => {
+  const handleStatusChange = async (newStatus: 'confirmed' | 'pending' | 'cancelled' | 'completed') => {
     try {
       setLoading(true);
       setError(null);
@@ -174,7 +156,7 @@ function BookingDetails({ booking, onClose, onUpdate }: BookingDetailsProps) {
             <div className="flex gap-2">
               <select
                 value={editedBooking.status || 'pending'}
-                onChange={(e) => handleStatusChange(e.target.value)}
+                onChange={(e) => handleStatusChange(e.target.value as 'confirmed' | 'pending' | 'cancelled' | 'completed')}
                 disabled={loading}
                 className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
@@ -291,7 +273,7 @@ function BookingDetails({ booking, onClose, onUpdate }: BookingDetailsProps) {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-white font-medium">₹{parseFloat(room.price).toLocaleString()}</p>
+                        <p className="text-white font-medium">₹{parseFloat(room.price.toString()).toLocaleString()}</p>
                         <p className="text-slate-400 text-sm">per night</p>
                       </div>
                     </div>

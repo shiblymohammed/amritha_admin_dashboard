@@ -50,6 +50,7 @@ export interface RoomBooking {
   full_name: string;
   email: string;
   phone: string;
+  address?: string;
   special_requests?: string;
   check_in: string;
   check_out: string;
@@ -67,15 +68,24 @@ export interface SelectedRoom {
   name: string;
   quantity: number;
   occupancy: 'single' | 'double';
-  price: number;
+  price: number | string;
+  description?: string;
+  max_guests?: number;
 }
 
 export interface BookingStats {
   total_bookings: number;
   pending_bookings: number;
   confirmed_bookings: number;
+  cancelled_bookings: number;
+  completed_bookings: number;
   total_revenue: string;
+  monthly_revenue: string;
+  average_booking_value: string;
+  occupancy_rate: number;
+  total_guests: number;
   recent_bookings: RoomBooking[];
+  recent_bookings_count: number;
 }
 
 export interface NotificationItem {

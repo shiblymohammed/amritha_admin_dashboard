@@ -9,7 +9,6 @@ import {
   FiMail, 
   FiPhone, 
   FiEye, 
-  FiEdit2, 
   FiTrash2, 
   FiSearch,
   FiFilter,

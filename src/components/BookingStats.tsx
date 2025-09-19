@@ -32,6 +32,7 @@ function BookingStats({ onStatsUpdate }: BookingStatsProps) {
     average_booking_value: '0',
     occupancy_rate: 0,
     total_guests: 0,
+    recent_bookings: [],
     recent_bookings_count: 0
   });
   const [loading, setLoading] = useState(true);
@@ -71,20 +72,7 @@ function BookingStats({ onStatsUpdate }: BookingStatsProps) {
     return `${value.toFixed(1)}%`;
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'text-green-400';
-      case 'pending':
-        return 'text-yellow-400';
-      case 'cancelled':
-        return 'text-red-400';
-      case 'completed':
-        return 'text-blue-400';
-      default:
-        return 'text-slate-400';
-    }
-  };
+
 
   const getStatusIcon = (status: string) => {
     switch (status) {

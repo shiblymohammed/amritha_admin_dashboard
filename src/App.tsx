@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import MenuItemList from './components/MenuItemList';
 import BookingList from './components/BookingList';
-import BookingDetails from './components/BookingDetails';
 import NotificationSystem from './components/NotificationSystem';
 import BookingStats from './components/BookingStats';
 import { 
@@ -10,9 +9,7 @@ import {
   FiCalendar, 
   FiHome, 
   FiSettings,
-  FiBarChart,
-  FiUsers,
-  FiClock
+  FiBarChart
 } from 'react-icons/fi';
 
 type ActiveView = 'dashboard' | 'bookings' | 'menu' | 'settings';
