@@ -72,8 +72,17 @@ function NotificationSystem({ onNewBooking }: NotificationSystemProps) {
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking for new bookings:', error);
+      
+      // Handle authentication errors gracefully
+      if (error.response?.status === 401) {
+        console.log('Authentication required for checking new bookings');
+        return;
+      }
+      
+      // For other errors, you might want to show a notification
+      // but avoid spamming the user with error notifications
     }
   }, [isEnabled, lastChecked, soundEnabled, onNewBooking]);
 
@@ -110,8 +119,35 @@ function NotificationSystem({ onNewBooking }: NotificationSystemProps) {
           }));
 
         setNotifications(initialNotifications);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error loading initial notifications:', error);
+        
+        // Handle authentication errors gracefully
+        if (error.response?.status === 401) {
+          console.log('Authentication required for notifications');
+          // Show a helpful message about authentication
+          const authNotification: NotificationItem = {
+            id: `auth-info-${Date.now()}`,
+            type: 'system',
+            title: 'Notifications Ready',
+            message: 'Notification system is active and will show new bookings when they arrive.',
+            timestamp: new Date().toISOString(),
+            read: false
+          };
+          setNotifications([authNotification]);
+          return;
+        }
+        
+        // For other errors, show a system notification
+        const errorNotification: NotificationItem = {
+          id: `error-${Date.now()}`,
+          type: 'system',
+          title: 'Notification System Error',
+          message: 'Unable to load recent notifications. Please check your connection.',
+          timestamp: new Date().toISOString(),
+          read: false
+        };
+        setNotifications([errorNotification]);
       }
     };
 

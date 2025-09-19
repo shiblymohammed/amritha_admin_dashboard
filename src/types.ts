@@ -90,10 +90,11 @@ export interface BookingStats {
 
 export interface NotificationItem {
   id: string;
-  type: 'booking' | 'menu' | 'system';
+  type: 'booking' | 'menu' | 'system' | 'cancellation' | 'confirmation';
   title: string;
   message: string;
   timestamp: string;
   read: boolean;
   booking_reference?: string;
+  data?: any;
 }

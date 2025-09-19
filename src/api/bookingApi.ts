@@ -23,7 +23,7 @@ export const bookingApi = {
 
   // Update booking status
   updateBookingStatus: async (id: number, status: string): Promise<RoomBooking> => {
-    const response = await apiClient.patch(`/room-bookings/${id}/`, { status });
+    const response = await apiClient.put(`/room-bookings/${id}/status/`, { status });
     return response.data.data || response.data;
   },
 

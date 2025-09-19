@@ -1,27 +1,43 @@
 // _file: admin_dashboard/src/App.tsx_
-import { useState } from 'react';
-import MenuItemList from './components/MenuItemList';
+import React, { useState } from 'react';
+import { FiMenu, FiX, FiHome, FiCalendar, FiUsers, FiSettings, FiBarChart, FiPackage, FiBell, FiLogOut } from 'react-icons/fi';
 import BookingList from './components/BookingList';
-import NotificationSystem from './components/NotificationSystem';
 import BookingStats from './components/BookingStats';
-import { 
-  FiMenu, 
-  FiCalendar, 
-  FiHome, 
-  FiSettings,
-  FiBarChart
-} from 'react-icons/fi';
+import MenuItemList from './components/MenuItemList';
+import NotificationSystem from './components/NotificationSystem';
+import LoginForm from './components/LoginForm';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
-type ActiveView = 'dashboard' | 'bookings' | 'menu' | 'settings';
+type ActiveView = 'dashboard' | 'bookings' | 'guests' | 'menu' | 'settings' | 'notifications';
 
-function App() {
+const AppContent: React.FC = () => {
   const [activeView, setActiveView] = useState<ActiveView>('dashboard');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isAuthenticated, isLoading, user, logout } = useAuth();
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return <LoginForm />;
+  }
 
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: FiHome },
     { id: 'bookings', label: 'Bookings', icon: FiCalendar },
-    { id: 'menu', label: 'Menu Items', icon: FiMenu },
+    { id: 'guests', label: 'Guests', icon: FiUsers },
+    { id: 'menu', label: 'Menu Items', icon: FiPackage },
+    { id: 'notifications', label: 'Notifications', icon: FiBell },
     { id: 'settings', label: 'Settings', icon: FiSettings },
   ];
 
@@ -29,12 +45,38 @@ function App() {
     switch (activeView) {
       case 'bookings':
         return <BookingList />;
+      case 'guests':
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4 md:p-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex items-center gap-3 mb-8">
+                <FiUsers className="text-blue-400 text-3xl" />
+                <h1 className="text-3xl md:text-4xl font-bold text-white">Guest Management</h1>
+              </div>
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50">
+                <p className="text-slate-300">Guest management panel coming soon...</p>
+              </div>
+            </div>
+          </div>
+        );
+      case 'notifications':
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4 md:p-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex items-center gap-3 mb-8">
+                <FiBell className="text-blue-400 text-3xl" />
+                <h1 className="text-3xl md:text-4xl font-bold text-white">Notifications</h1>
+              </div>
+              <NotificationSystem />
+            </div>
+          </div>
+        );
       case 'menu':
         return (
           <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4 md:p-8">
             <div className="max-w-7xl mx-auto">
               <div className="flex items-center gap-3 mb-8">
-                <FiMenu className="text-blue-400 text-3xl" />
+                <FiPackage className="text-blue-400 text-3xl" />
                 <h1 className="text-3xl md:text-4xl font-bold text-white">Menu Management</h1>
               </div>
               <MenuItemList />
@@ -185,8 +227,27 @@ function App() {
             
             <div className="flex items-center gap-4">
               <NotificationSystem />
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">A</span>
+              
+              {/* User Menu */}
+              <div className="flex items-center gap-3">
+                <div className="text-right hidden sm:block">
+                  <p className="text-white text-sm font-medium">
+                    {user?.first_name} {user?.last_name}
+                  </p>
+                  <p className="text-slate-400 text-xs">{user?.email}</p>
+                </div>
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">
+                    {user?.first_name?.charAt(0) || 'A'}
+                  </span>
+                </div>
+                <button
+                  onClick={logout}
+                  className="p-2 text-slate-400 hover:text-white transition-colors"
+                  title="Logout"
+                >
+                  <FiLogOut className="text-lg" />
+                </button>
               </div>
             </div>
           </div>
@@ -199,6 +260,14 @@ function App() {
       </div>
     </div>
   );
-}
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+};
 
 export default App;
