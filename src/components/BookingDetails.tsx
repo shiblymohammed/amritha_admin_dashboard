@@ -11,10 +11,6 @@ import {
   FiMapPin, 
   FiCreditCard,
   FiUsers,
-  FiClock,
-  FiCheckCircle,
-  FiXCircle,
-  FiAlertCircle,
   FiRefreshCw,
   FiPrinter,
   FiDownload,
@@ -32,50 +28,9 @@ function BookingDetails({ booking, onClose, onUpdate }: BookingDetailsProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleStatusChange = async (newStatus: 'confirmed' | 'pending' | 'cancelled' | 'completed') => {
-    try {
-      setLoading(true);
-      setError(null);
-      await bookingApi.updateBookingStatus(booking.id, newStatus);
-      setEditedBooking({ ...editedBooking, status: newStatus });
-      onUpdate();
-    } catch (error) {
-      console.error('Error updating status:', error);
-      setError('Failed to update status. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const getStatusIcon = (status?: string) => {
-    switch (status) {
-      case 'confirmed':
-        return <FiCheckCircle className="text-green-400" />;
-      case 'pending':
-        return <FiClock className="text-yellow-400" />;
-      case 'cancelled':
-        return <FiXCircle className="text-red-400" />;
-      case 'completed':
-        return <FiCheckCircle className="text-blue-400" />;
-      default:
-        return <FiAlertCircle className="text-gray-400" />;
-    }
-  };
 
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'pending':
-        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'cancelled':
-        return 'bg-red-500/20 text-red-400 border-red-500/30';
-      case 'completed':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
-    }
-  };
+
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -142,35 +97,11 @@ function BookingDetails({ booking, onClose, onUpdate }: BookingDetailsProps) {
         )}
 
         <div className="p-6 space-y-6">
-          {/* Status and Actions */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="flex items-center gap-3">
-              <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(editedBooking.status)}`}>
-                {getStatusIcon(editedBooking.status)}
-                {editedBooking.status || 'pending'}
-              </span>
-              <span className="text-slate-400 text-sm">
-                Booked on {formatDateTime(booking.booking_date)}
-              </span>
-            </div>
-            <div className="flex gap-2">
-              <select
-                value={editedBooking.status || 'pending'}
-                onChange={(e) => handleStatusChange(e.target.value as 'confirmed' | 'pending' | 'cancelled' | 'completed')}
-                disabled={loading}
-                className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-              {loading && (
-                <div className="flex items-center">
-                  <FiRefreshCw className="w-4 h-4 animate-spin text-blue-400" />
-                </div>
-              )}
-            </div>
+          {/* Booking Information Header */}
+          <div className="flex items-center gap-3">
+            <span className="text-slate-400 text-sm">
+              Booked on {formatDateTime(booking.booking_date)}
+            </span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -273,7 +204,7 @@ function BookingDetails({ booking, onClose, onUpdate }: BookingDetailsProps) {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-white font-medium">₹{parseFloat(room.price.toString()).toLocaleString()}</p>
+                        <p className="text-white font-medium">₹{room.price ? parseFloat(room.price.toString()).toLocaleString() : '0'}</p>
                         <p className="text-slate-400 text-sm">per night</p>
                       </div>
                     </div>
@@ -294,15 +225,15 @@ function BookingDetails({ booking, onClose, onUpdate }: BookingDetailsProps) {
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-slate-600/50">
                 <span className="text-slate-300">Subtotal</span>
-                <span className="text-white">₹{(parseFloat(booking.total_price) * 0.9).toLocaleString()}</span>
+                <span className="text-white">₹{booking.total_price ? (parseFloat(booking.total_price) * 0.9).toLocaleString() : '0'}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-slate-600/50">
                 <span className="text-slate-300">Taxes & Fees</span>
-                <span className="text-white">₹{(parseFloat(booking.total_price) * 0.1).toLocaleString()}</span>
+                <span className="text-white">₹{booking.total_price ? (parseFloat(booking.total_price) * 0.1).toLocaleString() : '0'}</span>
               </div>
               <div className="flex justify-between items-center py-2 text-lg font-semibold">
                 <span className="text-white">Total Amount</span>
-                <span className="text-green-400">₹{parseFloat(booking.total_price).toLocaleString()}</span>
+                <span className="text-green-400">₹{booking.total_price ? parseFloat(booking.total_price).toLocaleString() : '0'}</span>
               </div>
             </div>
           </div>
@@ -318,33 +249,7 @@ function BookingDetails({ booking, onClose, onUpdate }: BookingDetailsProps) {
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-700">
-            <button
-              onClick={() => handleStatusChange('confirmed')}
-              disabled={loading || booking.status === 'confirmed'}
-              className="flex-1 bg-green-600 hover:bg-green-500 disabled:bg-green-800 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-lg transition-colors inline-flex items-center justify-center gap-2"
-            >
-              <FiCheckCircle className="w-4 h-4" />
-              Confirm Booking
-            </button>
-            <button
-              onClick={() => handleStatusChange('cancelled')}
-              disabled={loading || booking.status === 'cancelled'}
-              className="flex-1 bg-red-600 hover:bg-red-500 disabled:bg-red-800 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-lg transition-colors inline-flex items-center justify-center gap-2"
-            >
-              <FiXCircle className="w-4 h-4" />
-              Cancel Booking
-            </button>
-            <button
-              onClick={() => handleStatusChange('completed')}
-              disabled={loading || booking.status === 'completed'}
-              className="flex-1 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-lg transition-colors inline-flex items-center justify-center gap-2"
-            >
-              <FiCheckCircle className="w-4 h-4" />
-              Mark Complete
-            </button>
-          </div>
+
         </div>
       </div>
     </div>

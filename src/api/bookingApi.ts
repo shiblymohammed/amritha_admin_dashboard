@@ -5,7 +5,8 @@ import type { RoomBooking, BookingStats } from '../types';
 export const bookingApi = {
   // Get all bookings
   getAllBookings: async (): Promise<RoomBooking[]> => {
-    const response = await apiClient.get('/room-bookings/');
+    const timestamp = new Date().getTime();
+    const response = await apiClient.get(`/room-bookings/?_t=${timestamp}`);
     return response.data.data || response.data;
   },
 
@@ -21,11 +22,7 @@ export const bookingApi = {
     return response.data.data || response.data;
   },
 
-  // Update booking status
-  updateBookingStatus: async (id: number, status: string): Promise<RoomBooking> => {
-    const response = await apiClient.put(`/room-bookings/${id}/status/`, { status });
-    return response.data.data || response.data;
-  },
+
 
   // Delete booking
   deleteBooking: async (id: number): Promise<void> => {
@@ -56,11 +53,7 @@ export const bookingApi = {
     return response.data.data || response.data;
   },
 
-  // Get bookings by status
-  getBookingsByStatus: async (status: string): Promise<RoomBooking[]> => {
-    const response = await apiClient.get(`/room-bookings/?status=${status}`);
-    return response.data.data || response.data;
-  }
+
 };
 
 export default bookingApi;

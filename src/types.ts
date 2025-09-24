@@ -60,7 +60,6 @@ export interface RoomBooking {
   total_price: string;
   nights: number;
   booking_date: string;
-  status?: 'confirmed' | 'pending' | 'cancelled' | 'completed';
 }
 
 export interface SelectedRoom {
@@ -75,10 +74,6 @@ export interface SelectedRoom {
 
 export interface BookingStats {
   total_bookings: number;
-  pending_bookings: number;
-  confirmed_bookings: number;
-  cancelled_bookings: number;
-  completed_bookings: number;
   total_revenue: string;
   monthly_revenue: string;
   average_booking_value: string;

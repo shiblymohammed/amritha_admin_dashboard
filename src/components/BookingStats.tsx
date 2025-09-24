@@ -3,17 +3,13 @@ import { useState, useEffect, useCallback } from 'react';
 import type { BookingStats as BookingStatsType } from '../types';
 import { bookingApi } from '../api/bookingApi';
 import { 
-  FiCalendar, 
+  FiTrendingUp, 
+  FiTrendingDown, 
+  FiDollarSign, 
   FiUsers, 
-  FiClock, 
+  FiCalendar, 
   FiBarChart,
-  FiTrendingUp,
-  FiTrendingDown,
-  FiDollarSign,
-  FiRefreshCw,
-  FiCheckCircle,
-  FiXCircle,
-  FiAlertCircle
+  FiRefreshCw
 } from 'react-icons/fi';
 
 interface BookingStatsProps {
@@ -74,20 +70,7 @@ function BookingStats({ onStatsUpdate }: BookingStatsProps) {
 
 
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return <FiCheckCircle className="text-green-400" />;
-      case 'pending':
-        return <FiClock className="text-yellow-400" />;
-      case 'cancelled':
-        return <FiXCircle className="text-red-400" />;
-      case 'completed':
-        return <FiCheckCircle className="text-blue-400" />;
-      default:
-        return <FiAlertCircle className="text-slate-400" />;
-    }
-  };
+
 
   const calculateGrowthRate = (current: number, previous: number) => {
     if (previous === 0) return 0;
@@ -242,48 +225,7 @@ function BookingStats({ onStatsUpdate }: BookingStatsProps) {
         </div>
       </div>
 
-      {/* Booking Status Breakdown */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 border border-slate-700/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {getStatusIcon('pending')}
-              <span className="text-slate-300 text-sm">Pending</span>
-            </div>
-            <span className="text-lg font-semibold text-white">{stats.pending_bookings}</span>
-          </div>
-        </div>
 
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 border border-slate-700/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {getStatusIcon('confirmed')}
-              <span className="text-slate-300 text-sm">Confirmed</span>
-            </div>
-            <span className="text-lg font-semibold text-white">{stats.confirmed_bookings}</span>
-          </div>
-        </div>
-
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 border border-slate-700/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {getStatusIcon('completed')}
-              <span className="text-slate-300 text-sm">Completed</span>
-            </div>
-            <span className="text-lg font-semibold text-white">{stats.completed_bookings}</span>
-          </div>
-        </div>
-
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 border border-slate-700/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {getStatusIcon('cancelled')}
-              <span className="text-slate-300 text-sm">Cancelled</span>
-            </div>
-            <span className="text-lg font-semibold text-white">{stats.cancelled_bookings}</span>
-          </div>
-        </div>
-      </div>
 
       {/* Additional Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

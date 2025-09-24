@@ -11,13 +11,8 @@ import {
   FiEye, 
   FiTrash2, 
   FiSearch,
-  FiFilter,
   FiDownload,
-  FiRefreshCw,
-  FiClock,
-  FiCheckCircle,
-  FiXCircle,
-  FiAlertCircle
+  FiRefreshCw
 } from 'react-icons/fi';
 
 function BookingList() {
@@ -30,7 +25,6 @@ function BookingList() {
   
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('booking_date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -39,9 +33,12 @@ function BookingList() {
     try {
       setLoading(true);
       setError(null);
+      console.log('Fetching bookings...');
       const data = await bookingApi.getAllBookings();
+      console.log('Fetched bookings data:', data);
       setBookings(data);
       setFilteredBookings(data);
+      console.log('Bookings state updated');
     } catch (error) {
       console.error('Error fetching bookings:', error);
       setError('Failed to fetch bookings. Please try again.');
@@ -68,10 +65,7 @@ function BookingList() {
       );
     }
 
-    // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(booking => booking.status === statusFilter);
-    }
+
 
     // Date filter
     if (dateFilter !== 'all') {
@@ -133,22 +127,14 @@ function BookingList() {
     });
 
     setFilteredBookings(filtered);
-  }, [bookings, searchTerm, statusFilter, dateFilter, sortBy, sortOrder]);
+  }, [bookings, searchTerm, dateFilter, sortBy, sortOrder]);
 
   const handleViewDetails = (booking: RoomBooking) => {
     setSelectedBooking(booking);
     setIsDetailsOpen(true);
   };
 
-  const handleUpdateStatus = async (booking: RoomBooking, newStatus: string) => {
-    try {
-      await bookingApi.updateBookingStatus(booking.id, newStatus);
-      fetchBookings();
-    } catch (error) {
-      console.error('Error updating booking status:', error);
-      setError('Failed to update booking status.');
-    }
-  };
+
 
   const handleDeleteBooking = async (booking: RoomBooking) => {
     if (window.confirm(`Are you sure you want to delete booking ${booking.booking_reference}?`)) {
@@ -162,35 +148,7 @@ function BookingList() {
     }
   };
 
-  const getStatusIcon = (status?: string) => {
-    switch (status) {
-      case 'confirmed':
-        return <FiCheckCircle className="text-green-400" />;
-      case 'pending':
-        return <FiClock className="text-yellow-400" />;
-      case 'cancelled':
-        return <FiXCircle className="text-red-400" />;
-      case 'completed':
-        return <FiCheckCircle className="text-blue-400" />;
-      default:
-        return <FiAlertCircle className="text-gray-400" />;
-    }
-  };
 
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'pending':
-        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'cancelled':
-        return 'bg-red-500/20 text-red-400 border-red-500/30';
-      case 'completed':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
-    }
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -267,7 +225,7 @@ function BookingList() {
 
         {/* Filters */}
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-slate-700/50">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Search */}
             <div className="relative">
               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -280,21 +238,7 @@ function BookingList() {
               />
             </div>
 
-            {/* Status Filter */}
-            <div className="relative">
-              <FiFilter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
+
 
             {/* Date Filter */}
             <div>
@@ -347,7 +291,7 @@ function BookingList() {
             <FiCalendar className="mx-auto text-6xl text-slate-600 mb-4" />
             <h3 className="text-xl font-semibold text-slate-300 mb-2">No Bookings Found</h3>
             <p className="text-slate-400 mb-6">
-              {searchTerm || statusFilter !== 'all' || dateFilter !== 'all' 
+              {searchTerm || dateFilter !== 'all' 
                 ? 'Try adjusting your filters to see more results.' 
                 : 'No room bookings have been made yet.'}
             </p>
@@ -363,7 +307,6 @@ function BookingList() {
                     <th className="p-4 text-left text-sm font-medium text-blue-200">Dates</th>
                     <th className="p-4 text-left text-sm font-medium text-blue-200">Guests</th>
                     <th className="p-4 text-right text-sm font-medium text-blue-200">Total</th>
-                    <th className="p-4 text-center text-sm font-medium text-blue-200">Status</th>
                     <th className="p-4 text-right text-sm font-medium text-blue-200">Actions</th>
                   </tr>
                 </thead>
@@ -412,24 +355,6 @@ function BookingList() {
                       </td>
                       <td className="p-4 text-right">
                         <p className="font-bold text-green-400">₹{parseFloat(booking.total_price).toLocaleString()}</p>
-                      </td>
-                      <td className="p-4 text-center">
-                        <div className="flex flex-col items-center gap-1">
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(booking.status)}`}>
-                            {getStatusIcon(booking.status)}
-                            {booking.status || 'pending'}
-                          </span>
-                          <select
-                            value={booking.status || 'pending'}
-                            onChange={(e) => handleUpdateStatus(booking, e.target.value)}
-                            className="text-xs bg-slate-700 border border-slate-600 rounded px-2 py-1 text-white"
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
-                          </select>
-                        </div>
                       </td>
                       <td className="p-4 text-right">
                         <div className="flex justify-end space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
